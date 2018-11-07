@@ -1,5 +1,11 @@
 package com.mmall.controller.portal;
 
+import com.mmall.common.Constant;
+import com.mmall.common.ServerResponse;
+import com.mmall.dao.UserMapper;
+import com.mmall.pojo.User;
+import com.mmall.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -10,6 +16,9 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/user/")
 public class UserController {
 
+    @Autowired
+    private IUserService iUserService;
+
     /**
      * 用户登录
      * @param username
@@ -18,8 +27,11 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "login.do",method = RequestMethod.POST)
-    public Object login(String username, String password, HttpSession session) {
-
-        return null;
+    public ServerResponse<User> login(String username, String password, HttpSession session) {
+        ServerResponse<User>  response = iUserService.login(username,password);
+        if (response.isSuccess()) {
+            session.setAttribute(Constant.CURRENT_USER,response.getData());
+        }
+        return response;
     }
 }

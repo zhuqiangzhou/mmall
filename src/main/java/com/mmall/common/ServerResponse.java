@@ -6,6 +6,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import java.io.Serializable;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+//保证序列化json的时候，如果是null的对象，key也会消失
 public class ServerResponse<T> implements Serializable {
 
     private int status;
@@ -32,6 +33,7 @@ public class ServerResponse<T> implements Serializable {
     }
 
     @JsonIgnore
+    //使之不在json序列化结果区
     public boolean isSuccess() {
         return this.status==ResponseCode.SUCCESS.getCode();
     }
