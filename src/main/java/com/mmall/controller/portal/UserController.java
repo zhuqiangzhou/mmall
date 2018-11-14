@@ -1,6 +1,7 @@
 package com.mmall.controller.portal;
 
 import com.mmall.common.Constant;
+import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
 import com.mmall.service.IUserService;
@@ -41,7 +42,7 @@ public class UserController {
      * @param session
      * @return
      */
-    @RequestMapping(value = "logout.do",method = RequestMethod.GET)
+    @RequestMapping(value = "logout.do",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> logout(HttpSession session) {
         session.removeAttribute(Constant.CURRENT_USER);
@@ -120,7 +121,7 @@ public class UserController {
     @ResponseBody
     public ServerResponse<User> update_information(HttpSession session,User user){
         User currentUser = (User) session.getAttribute(Constant.CURRENT_USER);
-        if (user == null) {
+        if (currentUser == null) {
             return ServerResponse.createByErrorMessage("用户未登录");
         }
         user.setId(currentUser.getId());
@@ -132,5 +133,15 @@ public class UserController {
             session.setAttribute(Constant.CURRENT_USER,response.getData());
         }
         return response;
+    }
+
+    @RequestMapping(value = "get_information.do",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<User> get_information(HttpSession session){
+        User currentUser = (User) session.getAttribute(Constant.CURRENT_USER);
+        if (currentUser == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(),"未登录，需要强制登录status=10");
+        }
+        return iUserService.getInfomation(currentUser.getId());
     }
 }
